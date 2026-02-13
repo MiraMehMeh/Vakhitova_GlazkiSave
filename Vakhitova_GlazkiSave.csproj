@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +15,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,8 +38,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -55,6 +67,63 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Agent.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AgentPriorityHistory.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AgentType.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Material.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialCountHistory.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialType.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Product.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProductCostHistory.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProductMaterial.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProductSale.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProductType.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Shop.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Supplier.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sysdiagrams.cs">
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VakhitovaModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VakhitovaModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VakhitovaModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VakhitovaModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VakhitovaModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VakhitovaModel.edmx</DependentUpon>
+    </Compile>
     <Page Include="AddEditPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -101,17 +170,177 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <EntityDeploy Include="VakhitovaModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>VakhitovaModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="VakhitovaModel.edmx.diagram">
+      <DependentUpon>VakhitovaModel.edmx</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="pics\Глазки-save.ico" />
     <Resource Include="pics\Глазки-save.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pics\picture.png" />
+    <Resource Include="agents\agent_1.png" />
+    <Resource Include="agents\agent_10.png" />
+    <Resource Include="agents\agent_100.png" />
+    <Resource Include="agents\agent_101.png" />
+    <Resource Include="agents\agent_102.png" />
+    <Resource Include="agents\agent_103.png" />
+    <Resource Include="agents\agent_104.png" />
+    <Resource Include="agents\agent_105.png" />
+    <Resource Include="agents\agent_106.png" />
+    <Resource Include="agents\agent_107.png" />
+    <Resource Include="agents\agent_108.png" />
+    <Resource Include="agents\agent_109.png" />
+    <Resource Include="agents\agent_11.png" />
+    <Resource Include="agents\agent_110.png" />
+    <Resource Include="agents\agent_111.png" />
+    <Resource Include="agents\agent_112.png" />
+    <Resource Include="agents\agent_113.png" />
+    <Resource Include="agents\agent_114.png" />
+    <Resource Include="agents\agent_115.png" />
+    <Resource Include="agents\agent_116.png" />
+    <Resource Include="agents\agent_117.png" />
+    <Resource Include="agents\agent_118.png" />
+    <Resource Include="agents\agent_119.png" />
+    <Resource Include="agents\agent_12.png" />
+    <Resource Include="agents\agent_120.png" />
+    <Resource Include="agents\agent_121.png" />
+    <Resource Include="agents\agent_122.png" />
+    <Resource Include="agents\agent_123.png" />
+    <Resource Include="agents\agent_124.png" />
+    <Resource Include="agents\agent_125.png" />
+    <Resource Include="agents\agent_126.png" />
+    <Resource Include="agents\agent_127.png" />
+    <Resource Include="agents\agent_128.png" />
+    <Resource Include="agents\agent_129.png" />
+    <Resource Include="agents\agent_13.png" />
+    <Resource Include="agents\agent_130.png" />
+    <Resource Include="agents\agent_14.png" />
+    <Resource Include="agents\agent_15.png" />
+    <Resource Include="agents\agent_16.png" />
+    <Resource Include="agents\agent_17.png" />
+    <Resource Include="agents\agent_18.png" />
+    <Resource Include="agents\agent_19.png" />
+    <Resource Include="agents\agent_2.png" />
+    <Resource Include="agents\agent_20.png" />
+    <Resource Include="agents\agent_21.png" />
+    <Resource Include="agents\agent_22.png" />
+    <Resource Include="agents\agent_23.png" />
+    <Resource Include="agents\agent_24.png" />
+    <Resource Include="agents\agent_25.png" />
+    <Resource Include="agents\agent_26.png" />
+    <Resource Include="agents\agent_27.png" />
+    <Resource Include="agents\agent_28.png" />
+    <Resource Include="agents\agent_29.png" />
+    <Resource Include="agents\agent_3.png" />
+    <Resource Include="agents\agent_30.png" />
+    <Resource Include="agents\agent_31.png" />
+    <Resource Include="agents\agent_32.png" />
+    <Resource Include="agents\agent_33.png" />
+    <Resource Include="agents\agent_34.png" />
+    <Resource Include="agents\agent_35.png" />
+    <Resource Include="agents\agent_36.png" />
+    <Resource Include="agents\agent_37.png" />
+    <Resource Include="agents\agent_38.png" />
+    <Resource Include="agents\agent_39.png" />
+    <Resource Include="agents\agent_4.png" />
+    <Resource Include="agents\agent_40.png" />
+    <Resource Include="agents\agent_41.png" />
+    <Resource Include="agents\agent_42.png" />
+    <Resource Include="agents\agent_43.png" />
+    <Resource Include="agents\agent_44.png" />
+    <Resource Include="agents\agent_45.png" />
+    <Resource Include="agents\agent_46.png" />
+    <Resource Include="agents\agent_47.png" />
+    <Resource Include="agents\agent_48.png" />
+    <Resource Include="agents\agent_49.png" />
+    <Resource Include="agents\agent_5.png" />
+    <Resource Include="agents\agent_50.png" />
+    <Resource Include="agents\agent_51.png" />
+    <Resource Include="agents\agent_52.png" />
+    <Resource Include="agents\agent_53.png" />
+    <Resource Include="agents\agent_54.png" />
+    <Resource Include="agents\agent_55.png" />
+    <Resource Include="agents\agent_56.png" />
+    <Resource Include="agents\agent_57.png" />
+    <Resource Include="agents\agent_58.png" />
+    <Resource Include="agents\agent_59.png" />
+    <Resource Include="agents\agent_6.png" />
+    <Resource Include="agents\agent_60.png" />
+    <Resource Include="agents\agent_61.png" />
+    <Resource Include="agents\agent_62.png" />
+    <Resource Include="agents\agent_63.png" />
+    <Resource Include="agents\agent_64.png" />
+    <Resource Include="agents\agent_65.png" />
+    <Resource Include="agents\agent_66.png" />
+    <Resource Include="agents\agent_67.png" />
+    <Resource Include="agents\agent_68.png" />
+    <Resource Include="agents\agent_69.png" />
+    <Resource Include="agents\agent_7.png" />
+    <Resource Include="agents\agent_70.png" />
+    <Resource Include="agents\agent_71.png" />
+    <Resource Include="agents\agent_72.png" />
+    <Resource Include="agents\agent_73.png" />
+    <Resource Include="agents\agent_74.png" />
+    <Resource Include="agents\agent_75.png" />
+    <Resource Include="agents\agent_76.png" />
+    <Resource Include="agents\agent_77.png" />
+    <Resource Include="agents\agent_78.png" />
+    <Resource Include="agents\agent_79.png" />
+    <Resource Include="agents\agent_8.png" />
+    <Resource Include="agents\agent_80.png" />
+    <Resource Include="agents\agent_81.png" />
+    <Resource Include="agents\agent_82.png" />
+    <Resource Include="agents\agent_83.png" />
+    <Resource Include="agents\agent_84.png" />
+    <Resource Include="agents\agent_85.png" />
+    <Resource Include="agents\agent_86.png" />
+    <Resource Include="agents\agent_87.png" />
+    <Resource Include="agents\agent_88.png" />
+    <Resource Include="agents\agent_89.png" />
+    <Resource Include="agents\agent_9.png" />
+    <Resource Include="agents\agent_90.png" />
+    <Resource Include="agents\agent_91.png" />
+    <Resource Include="agents\agent_92.png" />
+    <Resource Include="agents\agent_93.png" />
+    <Resource Include="agents\agent_94.png" />
+    <Resource Include="agents\agent_95.png" />
+    <Resource Include="agents\agent_96.png" />
+    <Resource Include="agents\agent_97.png" />
+    <Resource Include="agents\agent_98.png" />
+    <Resource Include="agents\agent_99.png" />
+    <Content Include="VakhitovaModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VakhitovaModel.Context.cs</LastGenOutput>
+      <DependentUpon>VakhitovaModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="VakhitovaModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VakhitovaModel.edmx</DependentUpon>
+      <LastGenOutput>VakhitovaModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
 </Project>
