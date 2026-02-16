@@ -38,12 +38,25 @@ namespace Vakhitova_GlazkiSave
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Logo { get; set; }
+
+        public string AgentPhotoPath
+        {
+            get
+            {
+                if (Logo == null)
+                    return null;
+
+                return "imgs" + Logo;
+            }
+        }
+
         public string Address { get; set; }
         public int Priority { get; set; }
         public string DirectorName { get; set; }
         public string INN { get; set; }
         public string KPP { get; set; }
     
+
         public int SalesForYear
         {
             get
