@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Data.Entity;
+
 
 namespace Vakhitova_GlazkiSave
 {
@@ -20,6 +22,10 @@ namespace Vakhitova_GlazkiSave
     /// </summary>
     public partial class AgentPage : Page
     {
+        private List<Agent> _filteredAgents;
+        private int pageSize = 10;
+        private int currentPage = 1;
+
         public AgentPage()
         {
             InitializeComponent();
@@ -34,121 +40,24 @@ namespace Vakhitova_GlazkiSave
             CBFilt.SelectedIndex = 0;
 
             UpdateAgents();
-        }
 
-        int CountRecords; //кол-во записей в таблице 
-        int CountPage; // общее кол-во страниц
-        int CurrentPage = 0; // текущая стр
 
-        List<Agent> CurrentPageList = new List<Agent>();
-        List<Agent> TableList;
-
-        //функция отв за разделение listа
-        private void ChangePage(int direction, int? selectedPage)
-        {
-            //direction - направление. 0 - начало, 1 - пред стр
-            // selectedPage - при нажатии на стрелочки передается null
-            // при выборе опред стр в этой переменной находится номер стр
-
-            CurrentPageList.Clear(); //начальная очистка листа
-            CountRecords = TableList.Count;
-
-            // определение кол-во стр
-            if (CountRecords % 10 > 0)
+            // подписка на событие завершения навигации
+            this.Loaded += (s, e) =>
             {
-                CountPage = CountRecords / 10 + 1;
-            }
-
-            else
-            {
-                CountPage = CountRecords / 10;
-            }
-
-            Boolean Ifupdate = true;
-            // проверка на правильность если
-            //CurrentPage(номер текущ стр) "правильный"
-
-            int min;
-
-            if (selectedPage.HasValue) // проверка на значение не null (тк может быть null)
-            {
-                if (selectedPage >= 0 && selectedPage <= CountPage)
+                var navService = NavigationService.GetNavigationService(this);
+                if (navService != null)
                 {
-                    CurrentPage = (int)selectedPage;
-                    min = CurrentPage * 10 + 10 < CountRecords ? CurrentPage * 10 + 10 : CountRecords;
-
-                    for (int i = CurrentPage * 10; i < min; i++)
+                    navService.Navigated += (sender, args) =>
                     {
-                        CurrentPageList.Add(TableList[i]);
-                    }
+                        // Если текущая страница снова стала активной (после GoBack)
+                        if (args.Content == this)
+                        {
+                            UpdateAgents(); // перезагружаем данные из БД
+                        }
+                    };
                 }
-            }
-
-            else // если нажата стрелка
-            {
-                switch (direction)
-                {
-                    case 1: //нажата кнопка "пред стр"
-                        if (CurrentPage > 0) // те кнопка нажата правильно и назад можно идти
-                        {
-                            CurrentPage--;
-
-                            min = CurrentPage * 10 + 10 < CountRecords ? CurrentPage * 10 + 10 : CountRecords;
-
-                            for (int i = CurrentPage * 10; i < min; i++)
-                            {
-                                CurrentPageList.Add(TableList[i]);
-                            }
-                        }
-
-                        else
-                        {
-                            Ifupdate = false; // в случае если 
-                            //CurrentPage попытается выйти из диапзаона внесение данных не произойдет
-                        }
-
-                        break;
-
-                    case 2: // нажата кнопка след стр
-                        if (CurrentPage < CountPage - 1) // если вперед идти можно
-                        {
-                            CurrentPage++;
-
-                            min = CurrentPage * 10 + 10 < CountRecords ? CurrentPage * 10 + 10 : CountRecords;
-
-                            for (int i = CurrentPage * 10; i < min; i++)
-                            {
-                                CurrentPageList.Add(TableList[i]);
-                            }
-                        }
-
-                        else
-                        {
-                            Ifupdate = false;
-                        }
-
-                        break;
-                }
-
-            }
-
-            if (Ifupdate) // если currentPage не вышел из диапзаона, то
-            {
-                PageListBox.Items.Clear();
-                // удаление старых значений из листбокса номеров страниц, нужно чтобы при изменении
-                // кол-ва записей кол-во стр динамически изменялось
-
-                for (int i = 1; i <= CountPage; i++)
-                {
-                    PageListBox.Items.Add(i);
-                }
-
-                PageListBox.SelectedIndex = CurrentPage;
-
-                AgentListView.ItemsSource = CurrentPageList;
-                //обновить отображение списка агентов
-                AgentListView.Items.Refresh();
-            }
+            };
         }
 
 
@@ -157,6 +66,7 @@ namespace Vakhitova_GlazkiSave
             // все агенты с типом
             var currentAgents = Vakhitova_GlazkiSaveEntities.GetContext()
                                     .Agent.Include("AgentType")
+                                    .Include("ProductSale")  // добавьте эту строку
                                     .ToList();
 
             // фильтрация по типу агента
@@ -252,22 +162,43 @@ namespace Vakhitova_GlazkiSave
                 currentAgents = currentAgents.OrderByDescending(a => a.Priority).ToList();
             }
 
+
             //вывод результата в ListView
             AgentListView.ItemsSource = currentAgents;
 
-            // заполнение таблицы для постраничного вывода
-            TableList = currentAgents;
 
-            // вызов функции отображения кол-ва стр с параметрами:
-            // направление 0 - нач загрузка
-            // 0 - выбранная стр
-            ChangePage(0, 0);
+
+            _filteredAgents = currentAgents;
+            currentPage = 1;
+            ChangePage();
+        }
+
+
+        //функция отв за разделение listа
+        private void ChangePage()
+        {
+            PageListBox.Items.Clear();
+
+            int totalPages = (_filteredAgents.Count + pageSize - 1) / pageSize;
+
+            for (int i = 1; i <= totalPages; i++)
+            {
+                PageListBox.Items.Add(i);
+            }
+
+            PageListBox.SelectedItem = currentPage;
+
+            var agentsPage = _filteredAgents
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            AgentListView.ItemsSource = agentsPage;
         }
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditPage());
+            Manager.MainFrame.Navigate(new AddEditPage(null));
         }
 
         private void AgentListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -300,27 +231,100 @@ namespace Vakhitova_GlazkiSave
 
         private void ChangePriorityBtn_Click(object sender, RoutedEventArgs e)
         {
+            int maxPriority = 0;
 
+            foreach (Agent selectedAgent in AgentListView.SelectedItems)
+            {
+                if (selectedAgent.Priority > maxPriority)
+                    maxPriority = selectedAgent.Priority;
+            }
+
+            PriorChangeWindow prior = new PriorChangeWindow(maxPriority);
+            prior.Owner = Window.GetWindow(this);
+            prior.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            prior.ShowDialog();
+            int newPriority = Convert.ToInt32(prior.TBPriority.Text);
+
+            foreach (Agent agent in AgentListView.SelectedItems)
+            {
+                agent.Priority = newPriority;
+            }
+
+            try
+            {
+                Vakhitova_GlazkiSaveEntities.GetContext().SaveChanges();
+                AgentListView.SelectedItems.Clear();
+                UpdateAgents();
+            }
+
+            catch (Exception ex) 
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void AddAgentBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            Manager.MainFrame.Navigate(new AddEditPage(null));
         }
 
         private void LeftDirButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangePage(1, null);
+            int totalPages = (_filteredAgents.Count + pageSize - 1) / pageSize;
+            if (currentPage > 1)
+            {
+                currentPage--;
+                ChangePage();
+            }
         }
 
         private void RightDirButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangePage(2, null);
+            int totalPages = (_filteredAgents.Count + pageSize - 1) / pageSize;
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                ChangePage();
+            }
         }
 
         private void PageListBox_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            ChangePage(0, Convert.ToInt32(PageListBox.SelectedItem.ToString()) - 1);
+            if (PageListBox.SelectedItem is int page && page != currentPage)
+            {
+                currentPage = page;
+                ChangePage();
+            }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Manager.MainFrame.Navigate(new AddEditPage(AgentListView.SelectedItem as Agent));
+        }
+
+        private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                // Получаем статический контекст
+                var context = Vakhitova_GlazkiSaveEntities.GetContext();
+
+                // Полная очистка кэша – отсоединяем все сущности
+                foreach (var entry in context.ChangeTracker.Entries().ToList())
+                {
+                    entry.State = System.Data.Entity.EntityState.Detached;
+                }
+
+                // Принудительно выполняем запрос, чтобы обновить контекст
+                context.Agent.FirstOrDefault(); // любой запрос
+
+                // Теперь вызываем UpdateAgents() – он загрузит данные заново
+                UpdateAgents();
+
+                // Дополнительно обновляем ListView (на всякий случай)
+                AgentListView.Items.Refresh();
+            }
         }
     }
 }

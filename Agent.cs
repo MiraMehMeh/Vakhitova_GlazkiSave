@@ -11,7 +11,10 @@ namespace Vakhitova_GlazkiSave
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Diagnostics;
+    using System.IO;
+    using System.Windows;
+
     public partial class Agent
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -43,10 +46,25 @@ namespace Vakhitova_GlazkiSave
         {
             get
             {
-                if (Logo == null)
+                if (string.IsNullOrEmpty(Logo))
                     return null;
 
-                return "imgs" + Logo;
+                // Извлекаем только имя файла (после последнего слеша)
+                string fileName = Logo;
+                int lastSlash = fileName.LastIndexOfAny(new[] { '\\', '/' });
+                if (lastSlash >= 0)
+                    fileName = fileName.Substring(lastSlash + 1);
+
+                // Убираем возможные ведущие слеши (на всякий случай)
+                fileName = fileName.TrimStart('\\', '/');
+
+                // Строим путь к папке imgs/agents
+                string fullPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "imgs", "agents", fileName);
+
+                // Если файл существует – возвращаем путь, иначе null
+                return File.Exists(fullPath) ? fullPath : null;
             }
         }
 

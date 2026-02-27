@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Vakhitova_GlazkiSave"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="AgentPage" FontFamily="Century Gothic">
+      Title="AgentPage" FontFamily="Century Gothic" IsVisibleChanged="Page_IsVisibleChanged">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -43,6 +43,12 @@
         </StackPanel>
         
         <ListView Name="AgentListView" Grid.Row="1" SelectionChanged="AgentListView_SelectionChanged">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Редактировать" Click="MenuItem_Click"></MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">
@@ -108,7 +114,7 @@
                 Click="ChangePriorityBtn_Click" Visibility="Hidden"></Button>
 
             <Button Content="Добавить агента" Name="AddAgentBtn" FontSize="15" Width="200" Margin="5, 0, 0, 0"
-                    Click="AddAgentBtn_Click" Visibility="Hidden"></Button>
+                    Click="AddAgentBtn_Click"></Button>
         </StackPanel>
 
         
